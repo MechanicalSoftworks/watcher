@@ -175,6 +175,10 @@ function(wtr_add_bin_target
       LL_OPT_SET
       INCLUDE_PATH
       LLIB_SET)
+  if(IS_TEST AND NOT WTR_WATCHER_BUILD_TEST)
+    return()
+  endif()
+
   include(CheckIPOSupported)
   include(FetchContent)
   include(GNUInstallDirs)
@@ -348,14 +352,15 @@ wtr_add_autosan_test_bin_target(
 # in their mv(1) implementations. We smooth
 # over that by using the `rename` system call,
 # which doesn't vary much at all.
-wtr_add_bin_target(
-  "portable-destructive-rename"
-  "test-bin"
-  "OFF"
-  "devel/src/portable-destructive-rename/main.c"
-  ""
-  ""
-  ""
-  ""
-)
-
+if(NOT MSVC_VERSION)
+  wtr_add_bin_target(
+    "portable-destructive-rename"
+    "test-bin"
+    "OFF"
+    "devel/src/portable-destructive-rename/main.c"
+    ""
+    ""
+    ""
+    ""
+  )
+endif()
