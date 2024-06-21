@@ -294,7 +294,7 @@ function(wtr_add_hdr_target NAME HDR_SET)
   endif()
   message(STATUS "${NAME}: Added (BUILD_HDR=${BUILD_HDR})")
   add_library("${NAME}" INTERFACE "${HDR_SET}")
-  target_include_directories("${NAME}" INTERFACE "${INCLPATH}")
+  target_include_directories("${NAME}" INTERFACE $<BUILD_INTERFACE:${INCLPATH}> $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>)
   if(WTR_WATCHER_MAIN_PROJECT)
     install(FILES "${HDR_SET}" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/wtr" COMPONENT "include")
   endif()
@@ -520,3 +520,27 @@ if(BUILD_TESTING)
 else()
   message(STATUS "wtr.test_tool_test_all: Skipped (BUILD_TESTING=${BUILD_TESTING})")
 endif()
+
+set(TARGET_NAME "wtr.hdr_watcher")
+
+install(TARGETS ${TARGET_NAME}
+	EXPORT ${TARGET_NAME}Targets
+)
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+    ${TARGET_NAME}ConfigVersion.cmake
+    VERSION ${PACKAGE_VERSION}
+    COMPATIBILITY ExactVersion
+)
+
+install(EXPORT ${TARGET_NAME}Targets
+	FILE ${TARGET_NAME}Targets.cmake
+	DESTINATION ${CMAKE_INSTALL_CMAKEDIR}/${TARGET_NAME}
+)
+
+configure_file(${PROJECT_SOURCE_DIR}/cmake/Config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}Config.cmake @ONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}Config.cmake"
+	"${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}ConfigVersion.cmake"
+	DESTINATION ${CMAKE_INSTALL_CMAKEDIR}/${TARGET_NAME}
+)
