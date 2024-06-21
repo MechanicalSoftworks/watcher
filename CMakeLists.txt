@@ -240,7 +240,8 @@ function(wtr_add_hdr_target NAME INCLPATH HDR_NAME)
   target_include_directories(
     "${NAME}"
     INTERFACE
-    "${INCLPATH}"
+    $<BUILD_INTERFACE:${INCLPATH}>
+    $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>
   )
   install(
     FILES "${INCLPATH}/wtr/${HDR_NAME}"
@@ -364,3 +365,27 @@ if(NOT MSVC_VERSION)
     ""
   )
 endif()
+
+set(TARGET_NAME "wtr.hdr_watcher")
+
+install(TARGETS ${TARGET_NAME}
+	EXPORT ${TARGET_NAME}Targets
+)
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+    ${TARGET_NAME}ConfigVersion.cmake
+    VERSION ${PACKAGE_VERSION}
+    COMPATIBILITY ExactVersion
+)
+
+install(EXPORT ${TARGET_NAME}Targets
+	FILE ${TARGET_NAME}Targets.cmake
+	DESTINATION ${CMAKE_INSTALL_CMAKEDIR}/${TARGET_NAME}
+)
+
+configure_file(${PROJECT_SOURCE_DIR}/cmake/Config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}Config.cmake @ONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}Config.cmake"
+	"${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}ConfigVersion.cmake"
+	DESTINATION ${CMAKE_INSTALL_CMAKEDIR}/${TARGET_NAME}
+)
