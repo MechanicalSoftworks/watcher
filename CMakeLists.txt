@@ -185,6 +185,10 @@ function(wtr_add_bin_target
       LL_OPT_SET
       INCLUDE_PATH
       LLIB_SET)
+  if(IS_TEST AND NOT WTR_WATCHER_BUILD_TEST)
+    return()
+  endif()
+
   if(NOT IS_TEST AND NOT BUILD_BIN)
     message(STATUS "${NAME}: Skipped (BUILD_BIN=${BUILD_BIN})")
     return()
@@ -473,6 +477,7 @@ wtr_add_autosan_test_bin_target(
 # in their mv(1) implementations. We smooth
 # over that by using the `rename` system call,
 # which doesn't vary much at all.
+if(NOT MSVC_VERSION)
 wtr_add_bin_target(
   "portable-destructive-rename"
   "test-bin"
@@ -483,6 +488,7 @@ wtr_add_bin_target(
   ""
   ""
 )
+endif()
 
 set(PC_WATCHER_LIBS_PRIVATE "${LINK_LIBRARIES}")
 set(PC_WATCHER_LIBDIR "${CMAKE_INSTALL_LIBDIR}")
