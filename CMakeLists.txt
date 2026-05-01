@@ -9,11 +9,6 @@ cmake_policy(SET CMP0048 NEW) # For VERSION in project()
 cmake_policy(SET CMP0069 NEW) # For better IPO support
 cmake_minimum_required(VERSION 3.11)
 
-set(WTR_WATCHER_MAIN_PROJECT ON)
-if(DEFINED PROJECT_SOURCE_DIR)
-  set(WTR_WATCHER_MAIN_PROJECT OFF)
-endif()
-
 project(
   wtr.watcher
   VERSION 0.14.5 # hook: tool/release
